@@ -5,6 +5,9 @@ Detailed explanation of this code can be found in the lecture video (TO BE ADDED
 ## Topics
 
 1. Alphanumeric Input
+2. Complex layouts using nested panels
+3. Radio buttons
+4. Sliders
 
 ## Participation Exercise
 

@@ -11,7 +11,9 @@ import { Logger } from "@babylonjs/core/Misc/logger";
 import { WebXRInputSource } from "@babylonjs/core/XR/webXRInputSource";
 import { WebXRCamera } from "@babylonjs/core/XR/webXRCamera";
 import { PointLight } from "@babylonjs/core/Lights/pointLight";
-import { MeshBuilder, TransformNode } from "@babylonjs/core";
+import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
+import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder"
+import { Mesh } from "@babylonjs/core/Meshes/mesh"
 import { AdvancedDynamicTexture } from "@babylonjs/gui/2D/advancedDynamicTexture"
 import { VirtualKeyboard } from "@babylonjs/gui/2D/controls/virtualKeyboard" 
 import { InputText } from "@babylonjs/gui/2D/controls/inputText" 
@@ -19,7 +21,7 @@ import { TextBlock } from "@babylonjs/gui/2D/controls/textBlock"
 import { RadioButton } from "@babylonjs/gui/2D/controls/radioButton"
 import { StackPanel } from "@babylonjs/gui/2D/controls/stackPanel"
 import { Control } from "@babylonjs/gui/2D/controls/control"
-import { Mesh } from "@babylonjs/core/Meshes/mesh"
+import { Slider } from "@babylonjs/gui/2D/controls/sliders/slider"
 
 // Side effects
 import "@babylonjs/core/Helpers/sceneHelpers";
@@ -220,12 +222,21 @@ class Game
         var configTexture = AdvancedDynamicTexture.CreateForMesh(configPlane, 1500, 500);
         configTexture.background = (new Color4(.5, .5, .5, .25)).toHexString();
 
+        // Create a stack panel for the columns
+        var columnPanel = new StackPanel();
+        columnPanel.isVertical = false;
+        columnPanel.widthInPixels = 1400;
+        columnPanel.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
+        columnPanel.paddingLeftInPixels = 50;
+        columnPanel.paddingTopInPixels = 50;
+        configTexture.addControl(columnPanel);
+
+        // Create a stack panel for the radio buttons
         var radioButtonPanel = new StackPanel();
+        radioButtonPanel.widthInPixels = 400;
         radioButtonPanel.isVertical = true;
-        radioButtonPanel.widthInPixels = 1400;
-        radioButtonPanel.heightInPixels = 400;
-        radioButtonPanel.verticalAlignment = StackPanel.VERTICAL_ALIGNMENT_CENTER;
-        configTexture.addControl(radioButtonPanel);
+        radioButtonPanel.verticalAlignment = StackPanel.VERTICAL_ALIGNMENT_TOP;
+        columnPanel.addControl(radioButtonPanel);
 
         var radioButton1 = new RadioButton("radioButton1");
         radioButton1.width = "50px";
@@ -233,7 +244,7 @@ class Game
         radioButton1.color = "lightblue";
         radioButton1.background = "black";
 
-        var radioButton1Header = Control.AddHeader(radioButton1, "box", "1200px", {isHorizontal: true, controlFirst: true});
+        var radioButton1Header = Control.AddHeader(radioButton1, "box", "500px", {isHorizontal: true, controlFirst: true});
         radioButton1Header.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
         radioButton1Header.height = "75px";
         radioButton1Header.fontSize = "48px";
@@ -246,7 +257,7 @@ class Game
         radioButton2.color = "lightblue";
         radioButton2.background = "black";
 
-        var radioButton2Header = Control.AddHeader(radioButton2, "sphere", "1200px", {isHorizontal: true, controlFirst: true});
+        var radioButton2Header = Control.AddHeader(radioButton2, "sphere", "500px", {isHorizontal: true, controlFirst: true});
         radioButton2Header.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
         radioButton2Header.height = "75px";
         radioButton2Header.fontSize = "48px";
@@ -255,7 +266,6 @@ class Game
 
         var configurableMeshTransform = new TransformNode("configurableMeshTransform", this.scene);
         configurableMeshTransform.position = new Vector3(0, 1, 4);
-
 
         radioButton1.onIsCheckedChangedObservable.add( (state) => {
             if(state)
@@ -282,7 +292,69 @@ class Game
             }
         }); 
 
-        
+        // Create a stack panel for the radio buttons
+        var sliderPanel = new StackPanel();
+        sliderPanel.widthInPixels = 500;
+        sliderPanel.isVertical = true;
+        sliderPanel.verticalAlignment = StackPanel.VERTICAL_ALIGNMENT_TOP;
+        columnPanel.addControl(sliderPanel);
+
+        var xSlider = new Slider();
+        xSlider.minimum = 0;
+        xSlider.maximum = 360;
+        xSlider.value = 0;
+        xSlider.color = "lightblue";
+        xSlider.height = "50px";
+        xSlider.width = "500px";
+
+        var ySlider = new Slider();
+        ySlider.minimum = 0;
+        ySlider.maximum = 360;
+        ySlider.value = 0;
+        ySlider.color = "lightblue";
+        ySlider.height = "50px";
+        ySlider.width = "500px";
+
+        var zSlider = new Slider();
+        zSlider.minimum = 0;
+        zSlider.maximum = 360;
+        zSlider.value = 0;
+        zSlider.color = "lightblue";
+        zSlider.height = "50px";
+        zSlider.width = "500px";
+
+        var xSliderHeader = Control.AddHeader(xSlider, "x", "50px", {isHorizontal: true, controlFirst: false});
+        xSliderHeader.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
+        xSliderHeader.height = "75px";
+        xSliderHeader.fontSize = "48px";
+        xSliderHeader.color = "white";
+        sliderPanel.addControl(xSliderHeader);
+
+        var ySliderHeader = Control.AddHeader(ySlider, "y", "50px", {isHorizontal: true, controlFirst: false});
+        ySliderHeader.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
+        ySliderHeader.height = "75px";
+        ySliderHeader.fontSize = "48px";
+        ySliderHeader.color = "white";
+        sliderPanel.addControl(ySliderHeader);
+
+        var zSliderHeader = Control.AddHeader(zSlider, "z", "50px", {isHorizontal: true, controlFirst: false});
+        zSliderHeader.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
+        zSliderHeader.height = "75px";
+        zSliderHeader.fontSize = "48px";
+        zSliderHeader.color = "white";
+        sliderPanel.addControl(zSliderHeader);
+
+        xSlider.onValueChangedObservable.add((value) => {
+            configurableMeshTransform.rotation.x = value;
+        });
+
+        ySlider.onValueChangedObservable.add((value) => {
+            configurableMeshTransform.rotation.y = value;
+        });
+
+        zSlider.onValueChangedObservable.add((value) => {
+            configurableMeshTransform.rotation.z = value;
+        });
 
 
         this.scene.debugLayer.show(); 
