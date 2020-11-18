@@ -26,7 +26,6 @@ import { Slider } from "@babylonjs/gui/2D/controls/sliders/slider"
 // Side effects
 import "@babylonjs/core/Helpers/sceneHelpers";
 import "@babylonjs/inspector";
-import { ControlPropertyGridComponent } from "@babylonjs/inspector/components/actionTabs/tabs/propertyGrids/gui/controlPropertyGridComponent";
 
 class Game 
 { 
@@ -238,24 +237,26 @@ class Game
         radioButtonPanel.verticalAlignment = StackPanel.VERTICAL_ALIGNMENT_TOP;
         columnPanel.addControl(radioButtonPanel);
 
+        // Create radio buttons for changing the object type
         var radioButton1 = new RadioButton("radioButton1");
         radioButton1.width = "50px";
         radioButton1.height = "50px";
         radioButton1.color = "lightblue";
         radioButton1.background = "black";
-
-        var radioButton1Header = Control.AddHeader(radioButton1, "box", "500px", {isHorizontal: true, controlFirst: true});
-        radioButton1Header.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
-        radioButton1Header.height = "75px";
-        radioButton1Header.fontSize = "48px";
-        radioButton1Header.color = "white";
-        radioButtonPanel.addControl(radioButton1Header);
         
         var radioButton2 = new RadioButton("radioButton1");
         radioButton2.width = "50px";
         radioButton2.height = "50px";
         radioButton2.color = "lightblue";
         radioButton2.background = "black";
+
+        // Text headers for the radio buttons
+        var radioButton1Header = Control.AddHeader(radioButton1, "box", "500px", {isHorizontal: true, controlFirst: true});
+        radioButton1Header.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
+        radioButton1Header.height = "75px";
+        radioButton1Header.fontSize = "48px";
+        radioButton1Header.color = "white";
+        radioButtonPanel.addControl(radioButton1Header);
 
         var radioButton2Header = Control.AddHeader(radioButton2, "sphere", "500px", {isHorizontal: true, controlFirst: true});
         radioButton2Header.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
@@ -264,9 +265,11 @@ class Game
         radioButton2Header.color = "white";
         radioButtonPanel.addControl(radioButton2Header);
 
+        // Create a transform node to hold the configurable mesh
         var configurableMeshTransform = new TransformNode("configurableMeshTransform", this.scene);
         configurableMeshTransform.position = new Vector3(0, 1, 4);
 
+        // Event handlers for the radio buttons
         radioButton1.onIsCheckedChangedObservable.add( (state) => {
             if(state)
             {
@@ -299,6 +302,7 @@ class Game
         sliderPanel.verticalAlignment = StackPanel.VERTICAL_ALIGNMENT_TOP;
         columnPanel.addControl(sliderPanel);
 
+        // Create sliders for the x, y, and z rotation
         var xSlider = new Slider();
         xSlider.minimum = 0;
         xSlider.maximum = 360;
@@ -323,6 +327,7 @@ class Game
         zSlider.height = "50px";
         zSlider.width = "500px";
 
+        // Create text headers for the sliders
         var xSliderHeader = Control.AddHeader(xSlider, "x", "50px", {isHorizontal: true, controlFirst: false});
         xSliderHeader.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
         xSliderHeader.height = "75px";
@@ -344,6 +349,7 @@ class Game
         zSliderHeader.color = "white";
         sliderPanel.addControl(zSliderHeader);
 
+        // Event handlers for the sliders
         xSlider.onValueChangedObservable.add((value) => {
             configurableMeshTransform.rotation.x = value;
         });
