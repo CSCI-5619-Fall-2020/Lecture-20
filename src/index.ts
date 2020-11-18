@@ -15,6 +15,7 @@ import { MeshBuilder } from "@babylonjs/core";
 import { AdvancedDynamicTexture } from "@babylonjs/gui/2D/advancedDynamicTexture"
 import { VirtualKeyboard } from "@babylonjs/gui/2D/controls/virtualKeyboard" 
 import { InputText } from "@babylonjs/gui/2D/controls/inputText" 
+import { TextBlock } from "@babylonjs/gui/2D/controls/textBlock"
 
 // Side effects
 import "@babylonjs/core/Helpers/sceneHelpers";
@@ -122,11 +123,27 @@ class Game
             }
         });
 
+        // Manually create a plane for a text block
+        var staticTextPlane = MeshBuilder.CreatePlane("textPlane", {width: 8, height: 1}, this.scene);
+        staticTextPlane.position = new Vector3(0, 5, 8);
+        staticTextPlane.isPickable = false;
+
+        // Create a dynamic texture for the text block
+        var staticTextTexture = AdvancedDynamicTexture.CreateForMesh(staticTextPlane, 800, 100);
+        staticTextTexture.background = "#414163";
+
+        // Create a static text block
+        var staticText = new TextBlock();
+        staticText.text = "";
+        staticText.color = "white";
+        staticText.fontSize = 32;
+        staticTextTexture.addControl(staticText);
+
         // Create a plane for a virtual keyboard
         var keyboardPlane = MeshBuilder.CreatePlane("keyboardPlane", {}, this.scene);
         keyboardPlane.position = new Vector3(0, 1.6, 1);
 
-        // Create a dynamic texture for adding GUI controls
+        // Create a dynamic texture for the virtual keyboard
         var keyboardTexture = AdvancedDynamicTexture.CreateForMesh(keyboardPlane, 1024, 1024);
 
         // Create a keyboard input text field
@@ -166,6 +183,7 @@ class Game
                 // Enter
                 case '\u21B5':
                     keyboardInput.processKey(13);
+                    staticText.text = keyboardInput.text;
                     break;  
                 
                 default:
