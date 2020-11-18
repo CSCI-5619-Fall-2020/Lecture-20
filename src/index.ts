@@ -5,21 +5,26 @@
 
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { Scene } from "@babylonjs/core/scene";
-import { Vector3, Color3 } from "@babylonjs/core/Maths/math";
+import { Vector3, Color3, Color4 } from "@babylonjs/core/Maths/math";
 import { UniversalCamera } from "@babylonjs/core/Cameras/universalCamera";
 import { Logger } from "@babylonjs/core/Misc/logger";
 import { WebXRInputSource } from "@babylonjs/core/XR/webXRInputSource";
 import { WebXRCamera } from "@babylonjs/core/XR/webXRCamera";
 import { PointLight } from "@babylonjs/core/Lights/pointLight";
-import { MeshBuilder } from "@babylonjs/core";
+import { MeshBuilder, TransformNode } from "@babylonjs/core";
 import { AdvancedDynamicTexture } from "@babylonjs/gui/2D/advancedDynamicTexture"
 import { VirtualKeyboard } from "@babylonjs/gui/2D/controls/virtualKeyboard" 
 import { InputText } from "@babylonjs/gui/2D/controls/inputText" 
 import { TextBlock } from "@babylonjs/gui/2D/controls/textBlock"
+import { RadioButton } from "@babylonjs/gui/2D/controls/radioButton"
+import { StackPanel } from "@babylonjs/gui/2D/controls/stackPanel"
+import { Control } from "@babylonjs/gui/2D/controls/control"
+import { Mesh } from "@babylonjs/core/Meshes/mesh"
 
 // Side effects
 import "@babylonjs/core/Helpers/sceneHelpers";
 import "@babylonjs/inspector";
+import { ControlPropertyGridComponent } from "@babylonjs/inspector/components/actionTabs/tabs/propertyGrids/gui/controlPropertyGridComponent";
 
 class Game 
 { 
@@ -30,6 +35,8 @@ class Game
     private xrCamera: WebXRCamera | null; 
     private leftController: WebXRInputSource | null;
     private rightController: WebXRInputSource | null;
+
+    private configurableMesh: Mesh | null;
 
     constructor()
     {
@@ -45,6 +52,8 @@ class Game
         this.xrCamera = null;
         this.leftController = null;
         this.rightController = null;
+
+        this.configurableMesh = null;
     }
 
     start() : void 
@@ -123,13 +132,18 @@ class Game
             }
         });
 
-        // Manually create a plane for a text block
-        var staticTextPlane = MeshBuilder.CreatePlane("textPlane", {width: 8, height: 1}, this.scene);
-        staticTextPlane.position = new Vector3(0, 5, 8);
+        // Create a parent transform
+        var textTransform = new TransformNode("textTransform");
+        textTransform.rotation.y = 270 * Math.PI / 180;
+
+        // Create a plane for a text block
+        var staticTextPlane = MeshBuilder.CreatePlane("textPlane", {width: 10, height: 5}, this.scene);
+        staticTextPlane.position = new Vector3(0, 7, 8);
         staticTextPlane.isPickable = false;
+        staticTextPlane.parent = textTransform;
 
         // Create a dynamic texture for the text block
-        var staticTextTexture = AdvancedDynamicTexture.CreateForMesh(staticTextPlane, 800, 100);
+        var staticTextTexture = AdvancedDynamicTexture.CreateForMesh(staticTextPlane, 1000, 500);
         staticTextTexture.background = "#414163";
 
         // Create a static text block
@@ -137,11 +151,14 @@ class Game
         staticText.text = "";
         staticText.color = "white";
         staticText.fontSize = 32;
+        staticText.textHorizontalAlignment = TextBlock.HORIZONTAL_ALIGNMENT_LEFT;
+        staticText.textVerticalAlignment = TextBlock.VERTICAL_ALIGNMENT_TOP;
         staticTextTexture.addControl(staticText);
 
         // Create a plane for a virtual keyboard
         var keyboardPlane = MeshBuilder.CreatePlane("keyboardPlane", {}, this.scene);
         keyboardPlane.position = new Vector3(0, 1.6, 1);
+        keyboardPlane.parent = textTransform;
 
         // Create a dynamic texture for the virtual keyboard
         var keyboardTexture = AdvancedDynamicTexture.CreateForMesh(keyboardPlane, 1024, 1024);
@@ -183,13 +200,90 @@ class Game
                 // Enter
                 case '\u21B5':
                     keyboardInput.processKey(13);
-                    staticText.text = keyboardInput.text;
+                    staticText.text += "\n> " + keyboardInput.text;
                     break;  
                 
                 default:
                     keyboardInput.processKey(-1, virtualKeyboard.shiftState == 0 ? key : key.toUpperCase());
             }
         });
+
+        // Create a parent transform for the object configuration panel
+        var configTransform = new TransformNode("textTransform");
+
+        // Create a plane for the object configuration panel
+        var configPlane = MeshBuilder.CreatePlane("configPlane", {width: 1.5, height: .5}, this.scene);
+        configPlane.position = new Vector3(0, 2, 1);
+        configPlane.parent = configTransform;
+
+        // Create a dynamic texture the object configuration panel
+        var configTexture = AdvancedDynamicTexture.CreateForMesh(configPlane, 1500, 500);
+        configTexture.background = (new Color4(.5, .5, .5, .25)).toHexString();
+
+        var radioButtonPanel = new StackPanel();
+        radioButtonPanel.isVertical = true;
+        radioButtonPanel.widthInPixels = 1400;
+        radioButtonPanel.heightInPixels = 400;
+        radioButtonPanel.verticalAlignment = StackPanel.VERTICAL_ALIGNMENT_CENTER;
+        configTexture.addControl(radioButtonPanel);
+
+        var radioButton1 = new RadioButton("radioButton1");
+        radioButton1.width = "50px";
+        radioButton1.height = "50px";
+        radioButton1.color = "lightblue";
+        radioButton1.background = "black";
+
+        var radioButton1Header = Control.AddHeader(radioButton1, "box", "1200px", {isHorizontal: true, controlFirst: true});
+        radioButton1Header.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
+        radioButton1Header.height = "75px";
+        radioButton1Header.fontSize = "48px";
+        radioButton1Header.color = "white";
+        radioButtonPanel.addControl(radioButton1Header);
+        
+        var radioButton2 = new RadioButton("radioButton1");
+        radioButton2.width = "50px";
+        radioButton2.height = "50px";
+        radioButton2.color = "lightblue";
+        radioButton2.background = "black";
+
+        var radioButton2Header = Control.AddHeader(radioButton2, "sphere", "1200px", {isHorizontal: true, controlFirst: true});
+        radioButton2Header.horizontalAlignment = StackPanel.HORIZONTAL_ALIGNMENT_LEFT;
+        radioButton2Header.height = "75px";
+        radioButton2Header.fontSize = "48px";
+        radioButton2Header.color = "white";
+        radioButtonPanel.addControl(radioButton2Header);
+
+        var configurableMeshTransform = new TransformNode("configurableMeshTransform", this.scene);
+        configurableMeshTransform.position = new Vector3(0, 1, 4);
+
+
+        radioButton1.onIsCheckedChangedObservable.add( (state) => {
+            if(state)
+            {
+                if(this.configurableMesh)
+                {
+                    this.configurableMesh.dispose();
+                }
+                this.configurableMesh = MeshBuilder.CreateBox("configurableMesh", {size: 1}, this.scene);
+                this.configurableMesh.parent = configurableMeshTransform;
+            
+            }
+        });   
+
+        radioButton2.onIsCheckedChangedObservable.add( (state) => {
+            if(state)
+            {
+                if(this.configurableMesh)
+                {
+                    this.configurableMesh.dispose();
+                }
+                this.configurableMesh = MeshBuilder.CreateSphere("configurableMesh", {diameter: 1}, this.scene);
+                this.configurableMesh.parent = configurableMeshTransform;
+            }
+        }); 
+
+        
+
 
         this.scene.debugLayer.show(); 
     }
