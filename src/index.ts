@@ -351,15 +351,15 @@ class Game
 
         // Event handlers for the sliders
         xSlider.onValueChangedObservable.add((value) => {
-            configurableMeshTransform.rotation.x = value;
+            configurableMeshTransform.rotation.x = value * Math.PI / 180;
         });
 
         ySlider.onValueChangedObservable.add((value) => {
-            configurableMeshTransform.rotation.y = value;
+            configurableMeshTransform.rotation.y = value * Math.PI / 180;
         });
 
         zSlider.onValueChangedObservable.add((value) => {
-            configurableMeshTransform.rotation.z = value;
+            configurableMeshTransform.rotation.z = value * Math.PI / 180;
         });
 
 

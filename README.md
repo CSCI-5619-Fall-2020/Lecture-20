@@ -1,13 +1,13 @@
 # Lecture 20: Immersive GUIs (Part 2)
 
-Detailed explanation of this code can be found in the lecture video (TO BE ADDED).
+Detailed explanation of this code can be found in the [lecture video](https://mediaspace.umn.edu/media/1_hcewz0nq).
 
 ## Topics
 
 1. Alphanumeric Input
 2. Complex layouts using nested panels
-3. Radio buttons
-4. Sliders
+3. Radio buttons and sliders
+4. 3D object manipulation using GUI widgets
 
 ## Participation Exercise
 
